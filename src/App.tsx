@@ -5,11 +5,13 @@ import './App.css'
 import TextDistortion from './components/textDistortion'
 import FBOParticles from './components/fbo/FBOParticles'
 import WaterShader from './components/water/WaterShader'
+// import { WaterDistortion } from './components/waterDistortion/WaterDistortion'
 
 function App() {
   const textDistortion = <TextDistortion text="PRESENT PRESENT" radius={2} height={6} segments={32} />
   const fboParticles = <FBOParticles />
   const water = <WaterShader />
+  // const distortion = new WaterDistortion()
 
   const [sample, setSample] = useState(textDistortion)
 
@@ -22,6 +24,7 @@ function App() {
         <button onClick={() => setSample(textDistortion)}>Text Distortion</button>
         <button onClick={() => setSample(fboParticles)}>FBO Particles</button>
         <button onClick={() => setSample(water)}>Water</button>
+        {/* <button onClick={() => setSample(distortion)}>Water Distortion</button> */}
       </div>
     </div>
   )

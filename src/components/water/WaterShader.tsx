@@ -22,8 +22,6 @@ let heightmapVariable
 let gpuCompute
 
 export default function WaterShader() {
-    const texture = new THREE.TextureLoader().load( "src/assets/test.jpeg" );
-
     const waterMaterial = new CustomShaderMaterialImpl({
         baseMaterial: MeshPhysicalMaterial,
         vertexShader: waterVertexShader,
@@ -31,10 +29,10 @@ export default function WaterShader() {
     })
 
     // Material attributes
-    waterMaterial.transmission = 0
-    waterMaterial.metalness = 0
+    waterMaterial.transmission = 1
+    waterMaterial.metalness = 1
     waterMaterial.roughness = 0
-    waterMaterial.map = texture
+    // waterMaterial.map = texture
 
     // waterMaterial.color = new Color(0x217d9c)
 
@@ -74,10 +72,6 @@ export default function WaterShader() {
         <>
             <Environment preset="sunset" />
             <mesh material={waterMaterial} rotation={[0, 0, 0]} position={[0, 0, -200]} scale={0.4} castShadow receiveShadow>
-                <planeGeometry args={[BOUNDS, BOUNDS, WIDTH, WIDTH]} />
-            </mesh>
-            <mesh rotation={[0, 0, 0]} position={[0, 0, -200.01]} scale={0.4}>
-                <meshBasicMaterial map={texture} />
                 <planeGeometry args={[BOUNDS, BOUNDS, WIDTH, WIDTH]} />
             </mesh>
         </>

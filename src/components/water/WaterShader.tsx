@@ -1,11 +1,15 @@
 //@ts-nocheck
+// https://codesandbox.io/s/r3f-water-shader-3kgfx5?file=/src/App.js:196-231
 
-import { Environment } from '@react-three/drei'
+import * as THREE from 'three'
+import { Environment, shaderMaterial } from '@react-three/drei'
 import { useFrame, useThree } from "@react-three/fiber"
 import { ShaderLib, UniformsUtils, Color, Vector2, MeshPhysicalMaterial } from "three"
 import { GPUComputationRenderer } from "three-stdlib"
+import { extend } from '@react-three/fiber'
 import heightmapFragmentShader from "./heightmapFragmentShader.glsl"
 import waterVertexShader from "./waterVertexShader.glsl"
+import imageFragmentShader from "./imageFragmentShader.glsl"
 import CustomShaderMaterialImpl from "three-custom-shader-material/vanilla"
 
 // Texture width for simulation
@@ -18,6 +22,8 @@ let heightmapVariable
 let gpuCompute
 
 export default function WaterShader() {
+    const texture = new THREE.TextureLoader().load( "src/assets/test.jpeg" );
+
     const waterMaterial = new CustomShaderMaterialImpl({
         baseMaterial: MeshPhysicalMaterial,
         vertexShader: waterVertexShader,
@@ -25,10 +31,12 @@ export default function WaterShader() {
     })
 
     // Material attributes
-    waterMaterial.transmission = 1
+    waterMaterial.transmission = 0
     waterMaterial.metalness = 0
     waterMaterial.roughness = 0
-    waterMaterial.color = new Color(0x217d9c)
+    waterMaterial.map = texture
+
+    // waterMaterial.color = new Color(0x217d9c)
 
     // Defines
     waterMaterial.defines.WIDTH = WIDTH.toFixed(1)
@@ -44,8 +52,8 @@ export default function WaterShader() {
     gpuCompute.setVariableDependencies(heightmapVariable, [heightmapVariable])
     heightmapVariable.material.uniforms["mousePos"] = { value: new Vector2(10000, 10000) }
     heightmapVariable.material.uniforms["mouseSize"] = { value: 20.0 }
-    heightmapVariable.material.uniforms["viscosityConstant"] = { value: 0.98 }
-    heightmapVariable.material.uniforms["heightCompensation"] = { value: 0 }
+    heightmapVariable.material.uniforms["viscosityConstant"] = { value: 0.9 }
+    heightmapVariable.material.uniforms["heightCompensation"] = { value: 1 }
     heightmapVariable.material.defines.BOUNDS = BOUNDS.toFixed(1)
 
     const error = gpuCompute.init()
@@ -57,7 +65,7 @@ export default function WaterShader() {
 
     useFrame(() => {
         const uniforms = heightmapVariable.material.uniforms
-        uniforms["mousePos"].value.set(pointer.x * 200, -pointer.y * 200)
+        uniforms["mousePos"].value.set(pointer.x * BOUNDS, -pointer.y * BOUNDS)
         gpuCompute.compute()
         waterUniforms["heightmap"].value = gpuCompute.getCurrentRenderTarget(heightmapVariable).texture
     })
@@ -66,6 +74,10 @@ export default function WaterShader() {
         <>
             <Environment preset="sunset" />
             <mesh material={waterMaterial} rotation={[0, 0, 0]} position={[0, 0, -200]} scale={0.4} castShadow receiveShadow>
+                <planeGeometry args={[BOUNDS, BOUNDS, WIDTH, WIDTH]} />
+            </mesh>
+            <mesh rotation={[0, 0, 0]} position={[0, 0, -200.01]} scale={0.4}>
+                <meshBasicMaterial map={texture} />
                 <planeGeometry args={[BOUNDS, BOUNDS, WIDTH, WIDTH]} />
             </mesh>
         </>

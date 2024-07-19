@@ -15,18 +15,21 @@ import CustomShaderMaterialImpl from "three-custom-shader-material/vanilla"
 // Texture width for simulation
 const WIDTH = 128
 // Water size in system units
-const BOUNDS = 512
+const BOUNDSX = 512
+const BOUNDSY = 512
 
 let waterUniforms
 let heightmapVariable
 let gpuCompute
 
-export default function WaterShader() {
+export default function WaterShader({ scale }) {
     const waterMaterial = new CustomShaderMaterialImpl({
         baseMaterial: MeshPhysicalMaterial,
         vertexShader: waterVertexShader,
         uniforms: UniformsUtils.merge([ShaderLib["physical"].uniforms, { heightmap: { value: null } }])
     })
+
+    const BOUNDS = scale.xy.min() * 0.66
 
     // Material attributes
     waterMaterial.transmission = 1
@@ -71,7 +74,7 @@ export default function WaterShader() {
     return (
         <>
             <Environment preset="sunset" />
-            <mesh material={waterMaterial} rotation={[0, 0, 0]} position={[0, 0, -200]} scale={0.4} castShadow receiveShadow>
+            <mesh material={waterMaterial} rotation={[0, 0, 0]} position={[0, 0, 100]} scale={0.4} castShadow receiveShadow scale={1}>
                 <planeGeometry args={[BOUNDS, BOUNDS, WIDTH, WIDTH]} />
             </mesh>
         </>

@@ -12,7 +12,7 @@ import fragmentShader from "./fragmentShader.glsl";
 
 extend({ SimulationMaterial: SimulationMaterial });
 
-export default function FBOParticles() {
+export default function FBOParticles({ scale, scrollState }) {
     const size = 128;
 
     const points = useRef();
@@ -83,7 +83,7 @@ export default function FBOParticles() {
                 </mesh>,
                 scene
             )}
-            <points ref={points}>
+            <points ref={points} scale={scale.xy.min() * 0.25}>
                 <bufferGeometry>
                     <bufferAttribute
                         attach="attributes-position"

@@ -1,3 +1,4 @@
+//@ts-nocheck
 //https://tympanus.net/codrops/2024/05/08/exploring-a-3d-text-distortion-effect-with-react-three-fiber/
 
 import { useRef } from "react";
@@ -11,7 +12,7 @@ interface Props {
     segments: number;
 }
 
-export default function TextDistortion({ text, radius, height, segments }: Props) {
+export default function TextDistortion({ scale, scrollState, text, radius, height, segments }) {
     const ref = useRef<any>();
 
     // Rotate the text
@@ -30,14 +31,14 @@ export default function TextDistortion({ text, radius, height, segments }: Props
         const z = radius * Math.sin(angle);
         textPositions.push({ x, z });
     }
+
     return (
-        <group ref={ref} rotation={[0.1, 0, 0]}>
+        <group ref={ref} position={[0, 0, 0]} scale={scale.xy.min() * 0.1}>
             <mesh>
                 <cylinderGeometry args={[radius, radius, height, segments]} />
                 <MeshTransmissionMaterial
                     backside
                     chromaticAberration={0.06}
-                    distortion={1}
                     distortionScale={0.2}
                     backsideThickness={5}
                     thickness={2}
